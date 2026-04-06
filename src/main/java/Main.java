@@ -45,6 +45,9 @@ public class Main {
 
             login(driver, user, pass);
 
+            // Check free gems at start
+            collectFreeGemsIfAvailable(driver);
+
             while (true) {
                 if (shouldStopNow(startTime)) {
                     System.out.println("Stopping due to runtime limit.");
@@ -69,6 +72,7 @@ public class Main {
                 driver.navigate().refresh();
                 sleep(5000);
 
+                // Check free gems again after refresh
                 collectFreeGemsIfAvailable(driver);
             }
 
