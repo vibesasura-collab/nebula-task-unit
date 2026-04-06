@@ -17,7 +17,6 @@ public class Main {
     private static final String LOGIN_URL = "https://elem.cards/login/";
     private static final String AUTOTUNE_URL = "https://elem.cards/funnyfights/?autotune=on";
     private static final String ENEMY_URL = "https://elem.cards/funnyfights/enemy/";
-    private static final String ATTACK_URL = "https://elem.cards/funnyfights/attack/";
     private static final String MANAGE_URL = "https://elem.cards/funnyfights/manage/";
 
     public static void main(String[] args) {
@@ -107,19 +106,28 @@ public class Main {
             sleep(2500);
 
             List<WebElement> attackBtns = driver.findElements(
-                By.xpath("//a[contains(@href,'/funnyfights/attack/')]")
+                By.xpath("//a[contains(@href,'/funnyfights/attack/') and .//span[text()='Attack!']]")
             );
 
             if (attackBtns.isEmpty()) {
-                System.out.println("Action not available for unit " + i + ". Skipping.");
+                System.out.println("Attack not available for unit " + i + ". Skipping.");
+                continue;
+            }
+
+            String attackLink = attackBtns.get(0).getAttribute("href");
+
+            if (attackLink == null || attackLink.isEmpty()) {
+                System.out.println("Attack link empty for unit " + i + ". Skipping.");
                 continue;
             }
 
             anyAttackDone = true;
-            System.out.println("Running action for unit " + i);
+            System.out.println("Attacking unit " + i + " with link: " + attackLink);
 
-            driver.get(ATTACK_URL);
+            driver.get(attackLink);
             sleep(5000);
+
+            System.out.println("Attack finished for unit " + i);
 
             driver.get(MANAGE_URL);
             sleep(2500);
@@ -145,7 +153,7 @@ public class Main {
                 String upgradeLink = upgradeBtns.get(0).getAttribute("href");
 
                 if (upgradeLink != null && !upgradeLink.isEmpty()) {
-                    System.out.println("Optional step available.");
+                    System.out.println("Optional step available: " + upgradeLink);
                     driver.get(upgradeLink);
                     sleep(2500);
                     return;
