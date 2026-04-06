@@ -18,6 +18,7 @@ public class Main {
     private static final String AUTOTUNE_URL = "https://elem.cards/funnyfights/?autotune=on";
     private static final String ENEMY_URL = "https://elem.cards/funnyfights/enemy/";
     private static final String MANAGE_URL = "https://elem.cards/funnyfights/manage/";
+    private static final String FUNNYFIGHTS_HOME_URL = "https://elem.cards/funnyfights/";
 
     public static void main(String[] args) {
         String user = System.getenv("USER_KEY");
@@ -67,6 +68,8 @@ public class Main {
 
                 driver.navigate().refresh();
                 sleep(5000);
+
+                collectFreeGemsIfAvailable(driver);
             }
 
         } catch (Exception e) {
@@ -163,6 +166,34 @@ public class Main {
             System.out.println("Optional step not available. Skipping.");
         } catch (Exception e) {
             System.out.println("Optional step failed. Skipping.");
+        }
+    }
+
+    private static void collectFreeGemsIfAvailable(WebDriver driver) {
+        try {
+            System.out.println("Checking free gems...");
+
+            driver.get(FUNNYFIGHTS_HOME_URL);
+            sleep(2500);
+
+            List<WebElement> freeGemBtns = driver.findElements(
+                By.xpath("//a[contains(@href,'/funnyfights/freegems/') and .//span[text()='Take']]")
+            );
+
+            if (!freeGemBtns.isEmpty()) {
+                String freeGemLink = freeGemBtns.get(0).getAttribute("href");
+
+                if (freeGemLink != null && !freeGemLink.isEmpty()) {
+                    System.out.println("Free gems available: " + freeGemLink);
+                    driver.get(freeGemLink);
+                    sleep(2500);
+                    return;
+                }
+            }
+
+            System.out.println("Free gems not available. Skipping.");
+        } catch (Exception e) {
+            System.out.println("Free gems step failed. Skipping.");
         }
     }
 
