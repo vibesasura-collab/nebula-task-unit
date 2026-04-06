@@ -19,6 +19,7 @@ public class Main {
     private static final String ENEMY_URL = "https://elem.cards/funnyfights/enemy/";
     private static final String MANAGE_URL = "https://elem.cards/funnyfights/manage/";
     private static final String FUNNYFIGHTS_HOME_URL = "https://elem.cards/funnyfights/";
+    private static final String HOME_URL = "https://elem.cards/";
 
     public static void main(String[] args) {
         String user = System.getenv("USER_KEY");
@@ -45,7 +46,7 @@ public class Main {
 
             login(driver, user, pass);
 
-            // Check free gems at start
+            collectDailyRewardIfAvailable(driver);
             collectFreeGemsIfAvailable(driver);
 
             while (true) {
@@ -72,7 +73,7 @@ public class Main {
                 driver.navigate().refresh();
                 sleep(5000);
 
-                // Check free gems again after refresh
+                collectDailyRewardIfAvailable(driver);
                 collectFreeGemsIfAvailable(driver);
             }
 
@@ -198,6 +199,34 @@ public class Main {
             System.out.println("Free gems not available. Skipping.");
         } catch (Exception e) {
             System.out.println("Free gems step failed. Skipping.");
+        }
+    }
+
+    private static void collectDailyRewardIfAvailable(WebDriver driver) {
+        try {
+            System.out.println("Checking daily reward...");
+
+            driver.get(HOME_URL);
+            sleep(2500);
+
+            List<WebElement> dailyRewardBtns = driver.findElements(
+                By.xpath("//a[contains(@href,'/dailyreward/tnx/') and .//span[text()='Receive']]")
+            );
+
+            if (!dailyRewardBtns.isEmpty()) {
+                String dailyRewardLink = dailyRewardBtns.get(0).getAttribute("href");
+
+                if (dailyRewardLink != null && !dailyRewardLink.isEmpty()) {
+                    System.out.println("Daily reward available: " + dailyRewardLink);
+                    driver.get(dailyRewardLink);
+                    sleep(2500);
+                    return;
+                }
+            }
+
+            System.out.println("Daily reward not available. Skipping.");
+        } catch (Exception e) {
+            System.out.println("Daily reward step failed. Skipping.");
         }
     }
 
