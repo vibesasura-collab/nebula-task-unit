@@ -22,67 +22,8 @@ public class Main {
     private static final String HOME_URL = "https://elem.cards/";
 
     public static void main(String[] args) {
-        String user = System.getenv("USER_KEY");
-        String pass = System.getenv("ACCESS_KEY");
-
-        if (user == null || user.isEmpty() || pass == null || pass.isEmpty()) {
-            throw new RuntimeException("USER_KEY or ACCESS_KEY not found in GitHub Secrets.");
-        }
-
-        WebDriverManager.chromedriver().setup();
-
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless=new");
-        options.addArguments("--no-sandbox");
-        options.addArguments("--disable-dev-shm-usage");
-        options.addArguments("--disable-gpu");
-        options.addArguments("--window-size=1920,1080");
-
-        WebDriver driver = new ChromeDriver(options);
-        Instant startTime = Instant.now();
-
-        try {
-            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
-
-            login(driver, user, pass);
-
-            collectDailyRewardIfAvailable(driver);
-            collectFreeGemsIfAvailable(driver);
-
-            while (true) {
-                if (shouldStopNow(startTime)) {
-                    System.out.println("Stopping due to runtime limit.");
-                    break;
-                }
-
-                runOneFullCycle(driver);
-
-                if (shouldStopNow(startTime)) {
-                    System.out.println("Stopping due to runtime limit.");
-                    break;
-                }
-
-                System.out.println("Cycle finished. Waiting " + WAIT_AFTER_FULL_CYCLE_MINUTES + " minutes...");
-                sleepMinutes(WAIT_AFTER_FULL_CYCLE_MINUTES);
-
-                if (shouldStopNow(startTime)) {
-                    System.out.println("Stopping due to runtime limit.");
-                    break;
-                }
-
-                driver.navigate().refresh();
-                sleep(5000);
-
-                collectDailyRewardIfAvailable(driver);
-                collectFreeGemsIfAvailable(driver);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException("Run failed", e);
-        } finally {
-            driver.quit();
-        }
+        System.out.println("Bot permanently disabled.");
+        return;
     }
 
     private static void login(WebDriver driver, String user, String pass) {
